@@ -8,6 +8,8 @@ export default function sitemap() {
     "",          // This is the homepage (/)
     "/about",
     "/services",
+        "/team",      // <-- ADD THIS
+    "/careers",   // <-- ADD THIS
     "/contact",
     // Add any other pages you have, like "/blog" or "/cbt-practice"
   ];
