@@ -1,6 +1,4 @@
-"use client";
-
-import { motion } from "framer-motion";
+// app/about/page.js (or wherever your about page is)
 import { companyHistory } from "../../lib/services";
 import {
   Award,
@@ -12,7 +10,15 @@ import {
 } from "lucide-react";
 import Image from "next/image";
 
-export default function AboutClient() {
+export const metadata = {
+  title: "About Us",
+  description: "Learn about BimTech SOLUTIONS, founded by CEO Miss. Omiyale Abimbola Olayemi. From a 3-person startup to Nigeria's leading education technology provider.",
+  alternates: {
+    canonical: "https://bimtechsolutions.com.ng/about",
+  },
+};
+
+export default function AboutPage() {
   const paragraphs = companyHistory.story.split("\n\n");
 
   const milestones = [
@@ -51,39 +57,22 @@ export default function AboutClient() {
     },
   ];
 
-  // Click handlers
-  const handleMilestoneClick = (milestone) => {
-    console.log("Milestone clicked:", milestone);
-    // Add your logic here (e.g., open a modal, navigate, etc.)
-  };
-
-  const handleValueClick = (value) => {
-    console.log("Value clicked:", value);
-    // Add your logic here
-  };
-
   return (
     <>
       {/* Hero */}
       <section className="relative pt-32 pb-20 overflow-hidden">
         <div className="absolute inset-0 bg-gradient-to-br from-brand-950 via-brand-900 to-brand-950" />
         <div className="relative max-w-7xl mx-auto px-6 text-center">
-          <motion.div
-            initial={{ opacity: 0, y: 30 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6 }}
-          >
-            <span className="inline-block px-4 py-1.5 bg-accent-500/10 text-accent-400 text-xs font-medium rounded-full uppercase tracking-wider mb-6">
-              About BimTech
-            </span>
-            <h1 className="text-4xl md:text-5xl lg:text-6xl font-semibold text-white tracking-tight">
-              Our Story
-            </h1>
-            <p className="mt-6 text-lg text-slate-300 max-w-2xl mx-auto leading-relaxed">
-              From a 3-person startup to a leading African technology company
-              — here&apos;s how we got here.
-            </p>
-          </motion.div>
+          <span className="inline-block px-4 py-1.5 bg-accent-500/10 text-accent-400 text-xs font-medium rounded-full uppercase tracking-wider mb-6 animate-fade-in-down">
+            About BimTech
+          </span>
+          <h1 className="text-4xl md:text-5xl lg:text-6xl font-semibold text-white tracking-tight">
+            Our Story
+          </h1>
+          <p className="mt-6 text-lg text-slate-300 max-w-2xl mx-auto leading-relaxed">
+            From a 3-person startup to a leading African technology company
+            — here&apos;s how we got here.
+          </p>
         </div>
       </section>
 
@@ -92,46 +81,33 @@ export default function AboutClient() {
         <div className="max-w-7xl mx-auto px-6">
           <div className="grid lg:grid-cols-2 gap-16 items-center">
             {/* Owner Portrait */}
-            <motion.div
-              initial={{ opacity: 0, x: -30 }}
-              whileInView={{ opacity: 1, x: 0 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.6 }}
-            >
-              <div className="relative">
-                <div className="rounded-2xl overflow-hidden bg-slate-100 shadow-xl">
-                  <Image
-                    src="/owner.jpg"
-                    alt="Miss. Omiyale Abimbola Olayemi, CEO of BimTech"
-                    width={506}
-                    height={554}
-                    className="w-full h-auto object-cover"
-                    priority
-                  />
+            <div className="relative">
+              <div className="rounded-2xl overflow-hidden bg-slate-100 shadow-xl transition-transform duration-300 hover:scale-[1.02]">
+                <Image
+                  src="/owner.jpg"
+                  alt="Miss. Omiyale Abimbola Olayemi, CEO of BimTech"
+                  width={506}
+                  height={554}
+                  className="w-full h-auto object-cover"
+                  priority // Good! Keeps this loading fast for LCP
+                />
+              </div>
+              {/* Years Badge */}
+              <div className="absolute -bottom-6 -right-6 bg-brand-950 text-white p-6 rounded-2xl shadow-2xl">
+                <div className="text-3xl font-semibold">
+                  {new Date().getFullYear() - companyHistory.founded}+
                 </div>
-                {/* Years Badge */}
-                <div className="absolute -bottom-6 -right-6 bg-brand-950 text-white p-6 rounded-2xl shadow-2xl">
-                  <div className="text-3xl font-semibold">
-                    {new Date().getFullYear() - companyHistory.founded}+
-                  </div>
-                  <div className="text-xs text-slate-300 uppercase tracking-wider">
-                    Years
-                  </div>
+                <div className="text-xs text-slate-300 uppercase tracking-wider">
+                  Years
                 </div>
               </div>
-            </motion.div>
+            </div>
 
             {/* Founder Info */}
-            <motion.div
-              initial={{ opacity: 0, x: 30 }}
-              whileInView={{ opacity: 1, x: 0 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.6 }}
-            >
+            <div>
               <span className="inline-block px-4 py-1.5 bg-accent-50 text-accent-600 text-xs font-medium rounded-full uppercase tracking-wider mb-4">
                 Founder &amp; CEO
               </span>
-              {/* Explicitly added CEO name here */}
               <h2 className="text-3xl md:text-4xl font-semibold text-brand-950 tracking-tight">
                 Miss. Omiyale Abimbola Olayemi
               </h2>
@@ -156,7 +132,7 @@ export default function AboutClient() {
                   </p>
                 ))}
               </div>
-            </motion.div>
+            </div>
           </div>
         </div>
       </section>
@@ -164,33 +140,23 @@ export default function AboutClient() {
       {/* Timeline */}
       <section className="py-24 bg-slate-50">
         <div className="max-w-7xl mx-auto px-6">
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            className="text-center mb-16"
-          >
+          <div className="text-center mb-16">
             <span className="inline-block px-4 py-1.5 bg-brand-950 text-white text-xs font-medium rounded-full uppercase tracking-wider mb-4">
               Timeline
             </span>
             <h2 className="text-3xl md:text-4xl font-semibold text-brand-950 tracking-tight">
               Our Journey
             </h2>
-          </motion.div>
+          </div>
 
           <div className="max-w-3xl mx-auto">
             {milestones.map((m, i) => (
-              <motion.div
+              <div
                 key={m.year}
-                initial={{ opacity: 0, x: -20 }}
-                whileInView={{ opacity: 1, x: 0 }}
-                viewport={{ once: true }}
-                transition={{ duration: 0.4, delay: i * 0.05 }}
-                onClick={() => handleMilestoneClick(m)}
                 className="flex gap-6 items-start group cursor-pointer"
               >
                 <div className="flex flex-col items-center">
-                  <div className="w-12 h-12 bg-brand-950 rounded-xl flex items-center justify-center text-white text-sm font-semibold shrink-0 group-hover:bg-accent-500 transition-colors">
+                  <div className="w-12 h-12 bg-brand-950 rounded-xl flex items-center justify-center text-white text-sm font-semibold shrink-0 group-hover:bg-accent-500 transition-colors duration-300">
                     {m.year.slice(2)}
                   </div>
                   {i < milestones.length - 1 && (
@@ -205,7 +171,7 @@ export default function AboutClient() {
                     {m.event}
                   </div>
                 </div>
-              </motion.div>
+              </div>
             ))}
           </div>
         </div>
@@ -214,30 +180,19 @@ export default function AboutClient() {
       {/* Values */}
       <section className="py-24 bg-white">
         <div className="max-w-7xl mx-auto px-6">
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            className="text-center mb-16"
-          >
+          <div className="text-center mb-16">
             <h2 className="text-3xl md:text-4xl font-semibold text-brand-950 tracking-tight">
               Our Values
             </h2>
-          </motion.div>
+          </div>
 
           <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
             {values.map((v, i) => {
               const Icon = v.icon;
               return (
-                <motion.div
+                <div
                   key={i}
-                  initial={{ opacity: 0, y: 20 }}
-                  whileInView={{ opacity: 1, y: 0 }}
-                  viewport={{ once: true }}
-                  transition={{ duration: 0.4, delay: i * 0.1 }}
-                  onClick={() => handleValueClick(v)}
-                  whileHover={{ scale: 1.03 }}
-                  className="p-8 rounded-2xl bg-brand-50 border border-brand-100 text-center cursor-pointer hover:bg-white hover:border-accent-400 hover:shadow-xl transition-all duration-300"
+                  className="p-8 rounded-2xl bg-brand-50 border border-brand-100 text-center cursor-pointer hover:bg-white hover:border-accent-400 hover:shadow-xl hover:-translate-y-2 transition-all duration-300"
                 >
                   <div className="w-14 h-14 bg-brand-950 rounded-xl flex items-center justify-center mx-auto mb-5 transition-colors group-hover:bg-accent-500">
                     <Icon className="w-7 h-7 text-white" />
@@ -248,7 +203,7 @@ export default function AboutClient() {
                   <p className="mt-3 text-sm text-slate-600 leading-relaxed">
                     {v.text}
                   </p>
-                </motion.div>
+                </div>
               );
             })}
           </div>

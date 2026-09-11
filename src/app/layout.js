@@ -3,7 +3,7 @@ import { Navbar } from "../components/Navbar";
 import { Footer } from "../components/Footer";
 
 export const metadata = {
-  metadataBase: new URL("https://bimtech.com.ng"),
+  metadataBase: new URL("https://bimtechsolutions.com.ng"),
   title: {
     default: "BimTech SOLUTIONS — Education Technology Solutions",
     template: "%s | BimTech SOLUTIONS",
@@ -27,7 +27,7 @@ export const metadata = {
     "automated bell system",
     "fingerprint attendance school",
   ],
-  authors: [{ name: "BimTech SOLUTIONS", url: "https://bimtech.com.ng" }],
+  authors: [{ name: "BimTech SOLUTIONS", url: "https://bimtechsolutions.com.ng" }],
   creator: "BimTech SOLUTIONS",
   publisher: "BimTech SOLUTIONS",
   formatDetection: {
@@ -38,7 +38,7 @@ export const metadata = {
   openGraph: {
     type: "website",
     locale: "en_NG",
-    url: "https://bimtech.com.ng",
+    url: "https://bimtechsolutions.com.ng",
     siteName: "BimTech SOLUTIONS",
     title: "BimTech SOLUTIONS — Education Technology Solutions",
     description:
@@ -72,7 +72,7 @@ export const metadata = {
     },
   },
   alternates: {
-    canonical: "https://bimtech.com.ng",
+    canonical: "https://bimtechsolutions.com.ng",
   },
 };
 
@@ -102,8 +102,8 @@ export default function RootLayout({ children }) {
               "@context": "https://schema.org",
               "@type": "Organization",
               name: "BimTech SOLUTIONS",
-              url: "https://bimtech.com.ng",
-              logo: "https://bimtech.com.ng/logo.png",
+              url: "https://bimtechsolutions.com.ng",
+              logo: "https://bimtechsolutions.com.ng/logo.png",
               description:
                 "Nigeria's leading integrated education technology provider.",
               foundingDate: "2015",

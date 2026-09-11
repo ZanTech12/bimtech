@@ -2,7 +2,7 @@ export const metadata = {
   title: "Mobile App Development",
   description: "Custom Android and iPhone (iOS) application development. Built to scale with your business, with full deployment to the Google Play Store and Apple App Store.",
   alternates: {
-    canonical: "https://bimtech.com.ng/services/mobile-app-development",
+    canonical: "https://bimtechsolutions.com.ng/services/mobile-app-development",
   },
 };
 
