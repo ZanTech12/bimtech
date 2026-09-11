@@ -1,5 +1,13 @@
 "use client";
 
+export const metadata = {
+  title: "Careers",
+  description: "Build the future of African EdTech. Explore our areas of expertise and join the BimTech SOLUTIONS talent network. Send us your CV today.",
+  alternates: {
+    canonical: "https://bimtech.com.ng/careers",
+  },
+};
+
 import { motion } from "framer-motion";
 import Link from "next/link";
 import { 

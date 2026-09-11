@@ -1,5 +1,13 @@
 "use client";
 
+export const metadata = {
+  title: "Home", // Renders as "Home | BimTech SOLUTIONS"
+  description: "Welcome to BimTech SOLUTIONS. Nigeria's leading integrated education technology provider offering online grading, CBT practice, IoT bells, and biometrics.",
+  alternates: {
+    canonical: "https://bimtech.com.ng",
+  },
+};
+
 import { useRef } from "react";
 import Link from "next/link";
 import Image from "next/image";
