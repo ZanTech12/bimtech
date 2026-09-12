@@ -4,7 +4,7 @@
 import { useRef } from "react";
 import Link from "next/link";
 import Image from "next/image";
-import { motion } from "framer-motion";
+import { motion, useMotionValue, useTransform, useSpring, useScroll } from "framer-motion";
 import { 
   ArrowRight, 
   Smartphone,
@@ -24,8 +24,77 @@ import { CTASection } from "@/components/CTASection";
 // Modern easing curve for smooth, premium animations
 const ease = [0.22, 1, 0.36, 1];
 
+/* ═══════════════════════════════════════════════════════════
+   ✨ NEW: Tilt3D — mouse-tracking 3D tilt with spring physics
+   Wraps any content in a perspective container; children get
+   real rotateX/rotateY following the cursor, with layered
+   children (translateZ) popping out in true 3D.
+   ═══════════════════════════════════════════════════════════ */
+function Tilt3D({ children, className = "", max = 10, scale = 1.02 }) {
+  const ref = useRef(null);
+  const mx = useMotionValue(0);
+  const my = useMotionValue(0);
+
+  const rotateX = useSpring(useTransform(my, [-0.5, 0.5], [max, -max]), {
+    stiffness: 180, damping: 18,
+  });
+  const rotateY = useSpring(useTransform(mx, [-0.5, 0.5], [-max, max]), {
+    stiffness: 180, damping: 18,
+  });
+
+  const handleMove = (e) => {
+    if (!ref.current) return;
+    const rect = ref.current.getBoundingClientRect();
+    mx.set((e.clientX - rect.left) / rect.width - 0.5);
+    my.set((e.clientY - rect.top) / rect.height - 0.5);
+  };
+
+  const handleLeave = () => { mx.set(0); my.set(0); };
+
+  return (
+    <div className={className} style={{ perspective: 1200 }}>
+      <motion.div
+        ref={ref}
+        onMouseMove={handleMove}
+        onMouseLeave={handleLeave}
+        whileHover={{ scale }}
+        style={{ rotateX, rotateY, transformStyle: "preserve-3d" }}
+        className="h-full w-full"
+      >
+        {children}
+      </motion.div>
+    </div>
+  );
+}
+
+/* ═══════════════════════════════════════════════════════════
+   ✨ NEW: Float3D — gentle infinite 3D floating loop
+   ═══════════════════════════════════════════════════════════ */
+function Float3D({ children, className = "", duration = 6, delay = 0, intensity = 10 }) {
+  return (
+    <motion.div
+      className={className}
+      animate={{
+        y: [0, -intensity, 0],
+        rotateX: [0, 4, 0, -4, 0],
+        rotateY: [0, -5, 0, 5, 0],
+      }}
+      transition={{ duration, delay, repeat: Infinity, ease: "easeInOut" }}
+      style={{ transformStyle: "preserve-3d" }}
+    >
+      {children}
+    </motion.div>
+  );
+}
+
 export default function HomeClient() {
   const whySectionRef = useRef(null);
+
+  // ✅ NEW: scroll parallax for background depth layers
+  const { scrollY } = useScroll();
+  const orbY1 = useTransform(scrollY, [0, 2400], [0, 260]);
+  const orbY2 = useTransform(scrollY, [0, 2400], [0, -180]);
+  const orbRotate = useTransform(scrollY, [0, 2400], [0, 90]);
 
   const handleMouseMove = (e) => {
     if (!whySectionRef.current) return;
@@ -39,11 +108,21 @@ export default function HomeClient() {
       {/* ─── Hero ─── */}
       <HeroSection />
 
-      {/* ─── Services Grid ─── */}
+      {/* ─── Services Grid (3D tilt on every card) ─── */}
       <section className="relative py-24 sm:py-32 bg-white overflow-hidden">
         {/* Modern dotted background pattern */}
         <div className="absolute inset-0 h-full w-full bg-[linear-gradient(to_right,#80808012_1px,transparent_1px),linear-gradient(to_bottom,#80808012_1px,transparent_1px)] bg-[size:24px_24px] [mask-image:radial-gradient(ellipse_50%_50%_at_50%_50%,#000_70%,transparent_100%)]" />
         
+        {/* ✨ NEW: floating 3D accent orbs */}
+        <motion.div
+          style={{ y: orbY1, rotate: orbRotate }}
+          className="pointer-events-none absolute -top-20 -right-24 w-72 h-72 rounded-[3rem] bg-gradient-to-br from-accent-500/10 to-transparent blur-3xl"
+        />
+        <motion.div
+          style={{ y: orbY2 }}
+          className="pointer-events-none absolute top-1/2 -left-24 w-80 h-80 rounded-full bg-brand-950/5 blur-3xl"
+        />
+
         <div className="relative max-w-7xl mx-auto px-6">
           {/* Section Header */}
           <motion.div
@@ -66,10 +145,12 @@ export default function HomeClient() {
             </p>
           </motion.div>
 
-          {/* Cards */}
+          {/* Cards — ✨ each card now tilts in 3D toward the cursor */}
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
             {services.map((service, i) => (
-              <ServiceCard key={service.id} service={service} index={i} />
+              <Tilt3D key={service.id} max={8} scale={1.03}>
+                <ServiceCard service={service} index={i} />
+              </Tilt3D>
             ))}
           </div>
 
@@ -97,7 +178,7 @@ export default function HomeClient() {
       {/* ─── Stats ─── */}
       <StatsSection />
 
-      {/* ─── Hardware & Devices Showcase ─── */}
+      {/* ─── Hardware & Devices Showcase (3D floating cards) ─── */}
       <section className="relative py-24 sm:py-32 bg-white overflow-hidden">
         <div className="max-w-7xl mx-auto px-6">
           <motion.div
@@ -119,69 +200,98 @@ export default function HomeClient() {
             </p>
           </motion.div>
 
-          {/* 3-Column Grid for reduced image size */}
+          {/* ✨ 3-Column Grid — each image floats in 3D + tilts to cursor */}
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8 lg:gap-12">
             <motion.div
-              initial={{ opacity: 0, y: 30 }}
+              initial={{ opacity: 0, y: 40 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true, margin: "-50px" }}
               transition={{ duration: 0.7, delay: 0.1, ease }}
-              className="group flex justify-center"
             >
-              <Image
-                src="/bm.jpeg"
-                alt="Biometric fingerprint scanning device"
-                width={400}
-                height={300}
-                className="rounded-2xl shadow-xl border border-slate-100 object-cover transition-transform duration-500 group-hover:scale-105"
-                priority
-              />
-            </motion.div>
-            
-            <motion.div
-              initial={{ opacity: 0, y: 30 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true, margin: "-50px" }}
-              transition={{ duration: 0.7, delay: 0.2, ease }}
-              className="group flex justify-center"
-            >
-              <Image
-                src="/bm2.jpeg"
-                alt="Facial recognition interface"
-                width={400}
-                height={300}
-                className="rounded-2xl shadow-xl border border-slate-100 object-cover transition-transform duration-500 group-hover:scale-105"
-              />
+              <Float3D duration={7} delay={0} intensity={12}>
+                <Tilt3D max={14} scale={1.05}>
+                  <div className="relative [transform-style:preserve-3d]">
+                    {/* 3D depth shadow layer beneath the card */}
+                    <div className="absolute inset-0 translate-y-4 translate-z-[-40px] rounded-2xl bg-brand-950/20 blur-2xl" aria-hidden="true" />
+                    <Image
+                      src="/bm.jpeg"
+                      alt="Biometric fingerprint scanning device"
+                      width={400}
+                      height={300}
+                      className="relative rounded-2xl shadow-xl border-4 border-white object-cover [transform:translateZ(30px)]"
+                      priority
+                    />
+                    {/* ✨ floating 3D label chip */}
+                    <div className="absolute -bottom-4 left-1/2 -translate-x-1/2 px-4 py-1.5 bg-brand-950 text-white text-[11px] font-semibold rounded-full shadow-xl [transform:translateZ(60px)] whitespace-nowrap">
+                      Fingerprint Scanner
+                    </div>
+                  </div>
+                </Tilt3D>
+              </Float3D>
             </motion.div>
 
             <motion.div
-              initial={{ opacity: 0, y: 30 }}
+              initial={{ opacity: 0, y: 40 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true, margin: "-50px" }}
+              transition={{ duration: 0.7, delay: 0.2, ease }}
+            >
+              <Float3D duration={8} delay={0.6} intensity={12}>
+                <Tilt3D max={14} scale={1.05}>
+                  <div className="relative [transform-style:preserve-3d]">
+                    <div className="absolute inset-0 translate-y-4 translate-z-[-40px] rounded-2xl bg-brand-950/20 blur-2xl" aria-hidden="true" />
+                    <Image
+                      src="/bm2.jpeg"
+                      alt="Facial recognition interface"
+                      width={400}
+                      height={300}
+                      className="relative rounded-2xl shadow-xl border-4 border-white object-cover [transform:translateZ(30px)]"
+                    />
+                    <div className="absolute -bottom-4 left-1/2 -translate-x-1/2 px-4 py-1.5 bg-brand-950 text-white text-[11px] font-semibold rounded-full shadow-xl [transform:translateZ(60px)] whitespace-nowrap">
+                      Face Recognition
+                    </div>
+                  </div>
+                </Tilt3D>
+              </Float3D>
+            </motion.div>
+
+            <motion.div
+              initial={{ opacity: 0, y: 40 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true, margin: "-50px" }}
               transition={{ duration: 0.7, delay: 0.3, ease }}
-              className="group flex justify-center"
             >
-              <Image
-                src="/bell 1.jpg"
-                alt="IoT Automation Bell"
-                width={400}
-                height={300}
-                className="rounded-2xl shadow-xl border border-slate-100 object-cover transition-transform duration-500 group-hover:scale-105"
-              />
+              <Float3D duration={7.5} delay={1.2} intensity={12}>
+                <Tilt3D max={14} scale={1.05}>
+                  <div className="relative [transform-style:preserve-3d]">
+                    <div className="absolute inset-0 translate-y-4 translate-z-[-40px] rounded-2xl bg-brand-950/20 blur-2xl" aria-hidden="true" />
+                    <Image
+                      src="/bell 1.jpg"
+                      alt="IoT Automation Bell"
+                      width={400}
+                      height={300}
+                      className="relative rounded-2xl shadow-xl border-4 border-white object-cover [transform:translateZ(30px)]"
+                    />
+                    <div className="absolute -bottom-4 left-1/2 -translate-x-1/2 px-4 py-1.5 bg-brand-950 text-white text-[11px] font-semibold rounded-full shadow-xl [transform:translateZ(60px)] whitespace-nowrap">
+                      IoT Smart Bell
+                    </div>
+                  </div>
+                </Tilt3D>
+              </Float3D>
             </motion.div>
           </div>
         </div>
       </section>
 
-      {/* ─── Why BimTech Section ─── */}
+      {/* ─── Why BimTech Section (3D parallax scene) ─── */}
       <section 
         ref={whySectionRef} 
         onMouseMove={handleMouseMove} 
         className="relative py-24 sm:py-32 bg-slate-50 overflow-hidden"
       >
-        {/* Soft gradient blobs */}
-        <div className="absolute top-20 left-0 w-72 h-72 bg-accent-500/10 rounded-full blur-3xl"></div>
-        <div className="absolute bottom-20 right-0 w-96 h-96 bg-brand-950/5 rounded-full blur-3xl"></div>
+        {/* Soft gradient blobs — ✨ now with scroll parallax */}
+        <motion.div style={{ y: orbY1 }} className="absolute top-20 left-0 w-72 h-72 bg-accent-500/10 rounded-full blur-3xl"></motion.div>
+        <motion.div style={{ y: orbY2 }} className="absolute bottom-20 right-0 w-96 h-96 bg-brand-950/5 rounded-full blur-3xl"></motion.div>
 
         {/* Mouse-Tracking Spotlight */}
         <div
@@ -244,7 +354,7 @@ export default function HomeClient() {
               </div>
             </motion.div>
 
-            {/* Right Image / Visuals */}
+            {/* Right Image / Visuals — ✨ full 3D scene */}
             <motion.div
               initial={{ opacity: 0, scale: 0.95 }}
               whileInView={{ opacity: 1, scale: 1 }}
@@ -255,34 +365,48 @@ export default function HomeClient() {
               {/* Gradient glow behind image */}
               <div className="absolute -inset-4 bg-gradient-to-tr from-accent-500/20 via-brand-950/10 to-transparent rounded-[2rem] blur-2xl"></div>
 
-              <div className="relative aspect-[4/5] rounded-[2rem] overflow-hidden bg-slate-100 border border-slate-200 shadow-2xl transition-transform duration-500 hover:scale-[1.02]">
-                <img
-                  src="/map.jpg"
-                  alt="BimTech technology solutions in action"
-                  className="w-full h-full object-cover"
-                />
-                {/* Image overlay tint */}
-                <div className="absolute inset-0 bg-gradient-to-t from-brand-950/40 via-transparent to-transparent"></div>
-              </div>
-
-              {/* Floating stat card - Glassmorphism */}
-              <motion.div
-                initial={{ opacity: 0, y: 30 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ duration: 0.6, delay: 0.4, ease }}
-                className="absolute -bottom-8 -left-8 sm:-left-12 bg-white/80 backdrop-blur-xl p-6 rounded-2xl shadow-2xl border border-white/60 flex items-center gap-4 hover:-translate-y-1 transition-transform duration-300"
-              >
-                <div className="w-12 h-12 bg-emerald-50 rounded-xl flex items-center justify-center border border-emerald-100 group-hover:scale-110 transition-transform duration-300">
-                  <ShieldCheck className="w-6 h-6 text-emerald-600" strokeWidth={2.5} />
-                </div>
-                <div>
-                  <div className="text-3xl font-bold text-brand-950 tracking-tight">
-                    99.9%
+              {/* ✨ NEW: entire visual tilts in 3D; inner layers have real depth */}
+              <Tilt3D max={12} scale={1.02}>
+                <div className="relative [transform-style:preserve-3d]">
+                  <div className="relative aspect-[4/5] rounded-[2rem] overflow-hidden bg-slate-100 border border-slate-200 shadow-2xl [transform:translateZ(0)] transition-transform duration-500 hover:scale-[1.02]">
+                    <img
+                      src="/map.jpg"
+                      alt="BimTech technology solutions in action"
+                      className="w-full h-full object-cover"
+                    />
+                    {/* Image overlay tint */}
+                    <div className="absolute inset-0 bg-gradient-to-t from-brand-950/40 via-transparent to-transparent"></div>
                   </div>
-                  <div className="text-xs text-slate-500 font-medium mt-1 uppercase tracking-wider">Uptime SLA</div>
+
+                  {/* Floating stat card — ✨ translateZ(70px) makes it physically
+                      pop OUT of the image in 3D when the card tilts */}
+                  <motion.div
+                    initial={{ opacity: 0, y: 30 }}
+                    whileInView={{ opacity: 1, y: 0 }}
+                    viewport={{ once: true }}
+                    transition={{ duration: 0.6, delay: 0.4, ease }}
+                    className="absolute -bottom-8 -left-8 sm:-left-12 bg-white/80 backdrop-blur-xl p-6 rounded-2xl shadow-2xl border border-white/60 flex items-center gap-4 [transform:translateZ(70px)] hover:-translate-y-1 transition-transform duration-300"
+                  >
+                    <div className="w-12 h-12 bg-emerald-50 rounded-xl flex items-center justify-center border border-emerald-100 group-hover:scale-110 transition-transform duration-300">
+                      <ShieldCheck className="w-6 h-6 text-emerald-600" strokeWidth={2.5} />
+                    </div>
+                    <div>
+                      <div className="text-3xl font-bold text-brand-950 tracking-tight">
+                        99.9%
+                      </div>
+                      <div className="text-xs text-slate-500 font-medium mt-1 uppercase tracking-wider">Uptime SLA</div>
+                    </div>
+                  </motion.div>
+
+                  {/* ✨ NEW: second floating chip on the opposite corner (extra depth) */}
+                  <Float3D duration={5} className="absolute -top-6 -right-4 [transform:translateZ(90px)]">
+                    <div className="px-4 py-2.5 bg-brand-950 text-white rounded-2xl shadow-2xl text-xs font-semibold flex items-center gap-2">
+                      <Sparkles className="w-4 h-4 text-accent-400" />
+                      500+ Deployments
+                    </div>
+                  </Float3D>
                 </div>
-              </motion.div>
+              </Tilt3D>
             </motion.div>
           </div>
         </div>
