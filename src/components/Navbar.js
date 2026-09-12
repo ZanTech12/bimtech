@@ -9,6 +9,7 @@ import { navLinks } from "@/lib/services";
 export function Navbar() {
   const [mobileOpen, setMobileOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
+  const [logoError, setLogoError] = useState(false);
   const pathname = usePathname();
 
   useEffect(() => {
@@ -35,10 +36,20 @@ export function Navbar() {
       }`}
     >
       <div className="max-w-7xl mx-auto px-6 flex items-center justify-between h-20">
-        {/* Logo */}
+        {/* Logo — logo.svg with Cpu-icon fallback */}
         <Link href="/" className="flex items-center gap-3 group">
-          <div className="w-10 h-10 bg-accent-500 rounded-xl flex items-center justify-center group-hover:scale-105 transition-transform duration-200">
-            <Cpu className="w-5 h-5 text-white" />
+          <div className="w-10 h-10 bg-accent-500 rounded-xl flex items-center justify-center overflow-hidden group-hover:scale-105 transition-transform duration-200 shadow-sm">
+            {!logoError ? (
+              /* eslint-disable-next-line @next/next/no-img-element */
+              <img
+                src="/logo.svg"
+                alt="BimTech logo"
+                className="w-full h-full object-contain"
+                onError={() => setLogoError(true)}
+              />
+            ) : (
+              <Cpu className="w-5 h-5 text-white" />
+            )}
           </div>
           <div className="flex flex-col">
             <span className="text-lg font-semibold text-brand-950 leading-tight">

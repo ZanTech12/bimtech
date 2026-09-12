@@ -30,6 +30,15 @@ export const metadata = {
   authors: [{ name: "BimTech SOLUTIONS", url: "https://bimtechsolutions.com.ng" }],
   creator: "BimTech SOLUTIONS",
   publisher: "BimTech SOLUTIONS",
+  // ✅ NEW: tab icon (favicon) — logo.svg site-wide
+  icons: {
+    icon: [
+      { url: "/logo.svg", type: "image/svg+xml" },
+      { url: "/favicon.ico", sizes: "any" }, // legacy fallback
+    ],
+    shortcut: "/logo.svg",
+    apple: "/apple-touch-icon.png",
+  },
   formatDetection: {
     email: false,
     address: false,
@@ -80,6 +89,8 @@ export default function RootLayout({ children }) {
   return (
     <html lang="en" className="scroll-smooth">
       <head>
+        {/* ✅ UPDATED: logo.svg as the tab icon, .ico kept for legacy browsers */}
+        <link rel="icon" href="/logo.svg" type="image/svg+xml" />
         <link rel="icon" href="/favicon.ico" sizes="any" />
         <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
         <link
@@ -103,7 +114,7 @@ export default function RootLayout({ children }) {
               "@type": "Organization",
               name: "BimTech SOLUTIONS",
               url: "https://bimtechsolutions.com.ng",
-              logo: "https://bimtechsolutions.com.ng/logo.png",
+              logo: "https://bimtechsolutions.com.ng/logo.svg",
               description:
                 "Nigeria's leading integrated education technology provider.",
               foundingDate: "2015",
