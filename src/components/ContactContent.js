@@ -16,8 +16,8 @@ export default function ContactContent() {
   };
 
   const contactInfo = [
-    { icon: MapPin, label: "Address", value: "3, Awoyomi Crescent, Ahmadiyyah, Ojokoro, Lagos state." },
-    { icon: Phone, label: "Phone", value: "+234706108 0995 " },
+    { icon: MapPin, label: "Address", value: "Abeokuta Express Way,  Lagos state." },
+    { icon: Phone, label: "Phone", value: "+2349014009929 " },
     { icon: Mail, label: "Email", value: "harbimbolaomiyale@gmail.com" },
     { icon: Clock, label: "Hours", value: "Mon - Fri: 8AM - 6PM" },
   ];

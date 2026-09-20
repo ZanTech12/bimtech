@@ -86,11 +86,11 @@ export function Footer() {
             <div className="mt-6 flex flex-col gap-3">
               <div className="flex items-start gap-3 text-sm text-slate-400">
                 <MapPin className="w-4 h-4 mt-0.5 shrink-0" />
-                <span>3, Awoyomi Crescent, Ahmadiyyah, Ojokoro, Lagos state.</span>
+                <span>Abeokuta Express Way,  Lagos state.</span>
               </div>
               <div className="flex items-center gap-3 text-sm text-slate-400">
                 <Phone className="w-4 h-4 shrink-0" />
-                <span>+234706108 0995</span>
+                <span>+2349014009929</span>
               </div>
               <div className="flex items-center gap-3 text-sm text-slate-400">
                 <Mail className="w-4 h-4 shrink-0" />
